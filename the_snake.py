@@ -77,11 +77,8 @@ class Apple(GameObject):
         super().__init__(body_color=APPLE_COLOR)
         self.randomize_position()
 
-    def randomize_position(self, occupied_positions=None):
-        """Разместить яблоко в свободной клетке."""
-        if occupied_positions is None:
-            occupied_positions = []
-
+    def randomize_position(self, occupied_positions=()):
+        """Разместить яблоко в случайной свободной клетке."""
         free_positions = [
             (x * GRID_SIZE, y * GRID_SIZE)
             for x in range(GRID_WIDTH)
@@ -96,17 +93,12 @@ class Apple(GameObject):
 
     def draw(self):
         """Отрисовать яблоко на игровом поле."""
-        rect = pg.Rect(
-            self.position,
-            (GRID_SIZE, GRID_SIZE)
-        )
+        if self.position is None:
+            return
 
-        pg.draw.rect(
-            screen, self.body_color, rect
-        )
-        pg.draw.rect(
-            screen, BORDER_COLOR, rect, 1
-        )
+        rect = pg.Rect(self.position, (GRID_SIZE, GRID_SIZE))
+        pg.draw.rect(screen, self.body_color, rect)
+        pg.draw.rect(screen, BORDER_COLOR, rect, 1)
 
 
 class Snake(GameObject):
@@ -222,8 +214,7 @@ def main():
     snake = Snake()
     apple = Apple()
 
-    while apple.position in snake.positions:
-        apple.randomize_position(snake.positions)
+    apple.randomize_position(snake.positions)
 
     while True:
 
@@ -237,14 +228,11 @@ def main():
 
         if snake.get_head_position() in snake.positions[1:]:
             snake.reset()
-            screen.fill(BOARD_BACKGROUND_COLOR)
+            apple.randomize_position(snake.positions)
 
         if snake.get_head_position() == apple.position:
             snake.length += 1
             apple.randomize_position(snake.positions)
-
-            while apple.position in snake.positions:
-                apple.randomize_position(snake.positions)
 
         screen.fill(BOARD_BACKGROUND_COLOR)
 
