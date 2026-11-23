@@ -1,4 +1,3 @@
-
 from random import choice
 
 import pygame as pg
@@ -19,19 +18,15 @@ RIGHT = (1, 0)
 DIRECTIONS = {
     (pg.K_UP, RIGHT): UP,
     (pg.K_UP, LEFT): UP,
-    (pg.K_UP, UP): UP,
 
     (pg.K_DOWN, RIGHT): DOWN,
     (pg.K_DOWN, LEFT): DOWN,
-    (pg.K_DOWN, DOWN): DOWN,
 
     (pg.K_LEFT, UP): LEFT,
     (pg.K_LEFT, DOWN): LEFT,
-    (pg.K_LEFT, LEFT): LEFT,
 
     (pg.K_RIGHT, UP): RIGHT,
     (pg.K_RIGHT, DOWN): RIGHT,
-    (pg.K_RIGHT, RIGHT): RIGHT,
 }
 
 # Цвета игровых объектов.
@@ -55,13 +50,11 @@ class GameObject:
     """Базовый класс игровых объектов."""
 
     def __init__(self, position=None, body_color=None):
-        if position is None:
-            position = (
-                SCREEN_WIDTH // 2,
-                SCREEN_HEIGHT // 2
-            )
-
-        self.position = position
+        """Инициализировать позицию и цвет объекта."""
+        self.position = (
+            (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+            if position is None else position
+        )
         self.body_color = body_color
 
     def draw(self):
@@ -110,9 +103,6 @@ class Snake(GameObject):
 
         self.reset()
         self.positions = [self.position]
-        self.direction = RIGHT
-        self.next_direction = None
-        self.last = None
 
     def reset(self):
         """Сбросить состояние змейки после столкновения."""
@@ -203,7 +193,8 @@ def handle_keys(game_object):
 
         if event.type == pg.KEYDOWN:
             game_object.next_direction = DIRECTIONS.get(
-                (event.key, game_object.direction)
+                (event.key, game_object.direction),
+                game_object.next_direction
             )
 
 
@@ -226,7 +217,7 @@ def main():
 
         snake.move()
 
-        if snake.get_head_position() in snake.positions[1:]:
+        if snake.get_head_position() in snake.positions[4:]:
             snake.reset()
             apple.randomize_position(snake.positions)
 
